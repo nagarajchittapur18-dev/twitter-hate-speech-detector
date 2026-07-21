@@ -1,0 +1,9 @@
+# Model artifacts directory
+# Files generated after running: python training/train_model.py
+#
+# Expected files:
+#   bilstm_model.h5    — Trained BiLSTM + Attention Keras model
+#   tokenizer.pkl      — Fitted Keras Tokenizer
+#   word2vec.model     — Trained Word2Vec embeddings
+#   label_encoder.pkl  — Fitted LabelEncoder
+.gitkeep

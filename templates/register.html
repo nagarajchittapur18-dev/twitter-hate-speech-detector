@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Register — HateGuardAI{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="container">
+    <div class="auth-card glass-card fade-up" style="max-width:500px">
+
+      <div class="text-center mb-4">
+        <div style="font-size:2.8rem;margin-bottom:.6rem">🚀</div>
+        <h1 class="auth-title gradient-text">Create Account</h1>
+        <p class="text-secondary-custom mb-0">Join HateGuardAI — it's free!</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <form method="POST" action="{{ url_for('register') }}" novalidate>
+
+        <div class="mb-3">
+          <label class="form-label-custom">
+            <i class="bi bi-person me-1 text-accent-blue"></i>Username
+          </label>
+          <input type="text" name="username" id="reg-username"
+                 class="form-control form-control-dark"
+                 placeholder="Choose a username"
+                 autocomplete="username" required/>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">
+            <i class="bi bi-envelope me-1 text-accent-blue"></i>Email Address
+          </label>
+          <input type="email" name="email" id="reg-email"
+                 class="form-control form-control-dark"
+                 placeholder="Enter your email"
+                 autocomplete="email" required/>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-custom">
+            <i class="bi bi-lock me-1 text-accent-blue"></i>Password
+          </label>
+          <div class="position-relative">
+            <input type="password" name="password" id="reg-password"
+                   class="form-control form-control-dark"
+                   placeholder="Min 6 characters"
+                   autocomplete="new-password"
+                   oninput="checkStrength(this.value)"
+                   required/>
+            <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y pe-3"
+                    style="background:none;border:none;color:var(--text-muted)"
+                    onclick="togglePwd('reg-password',this)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          <!-- Strength bar -->
+          <div class="progress-custom mt-2" style="height:4px">
+            <div id="strength-bar" class="bar" style="width:0;transition:width .4s,background .4s"></div>
+          </div>
+          <small id="strength-label" class="text-muted-custom"></small>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">
+            <i class="bi bi-lock-fill me-1 text-accent-blue"></i>Confirm Password
+          </label>
+          <input type="password" name="confirm" id="reg-confirm"
+                 class="form-control form-control-dark"
+                 placeholder="Repeat password"
+                 autocomplete="new-password" required/>
+        </div>
+
+        <button type="submit" class="btn btn-gradient w-100 py-2 mb-3">
+          <i class="bi bi-person-plus me-2"></i>Create Account
+        </button>
+
+        <p class="text-center text-secondary-custom mb-0" style="font-size:.88rem">
+          Already have an account?
+          <a href="{{ url_for('login') }}" class="text-accent-blue fw-600 text-decoration-none">Sign in</a>
+        </p>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const icon = btn.querySelector('i');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.classList.replace('bi-eye','bi-eye-slash');
+  } else {
+    inp.type = 'password';
+    icon.classList.replace('bi-eye-slash','bi-eye');
+  }
+}
+
+function checkStrength(val) {
+  const bar   = document.getElementById('strength-bar');
+  const label = document.getElementById('strength-label');
+  let score = 0;
+  if (val.length >= 6)  score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const levels = [
+    {pct:0,   color:'',        text:''},
+    {pct:20,  color:'#ff4757', text:'Very Weak'},
+    {pct:40,  color:'#ff4757', text:'Weak'},
+    {pct:60,  color:'#ffa502', text:'Fair'},
+    {pct:80,  color:'#00d2ff', text:'Strong'},
+    {pct:100, color:'#00ff88', text:'Very Strong'},
+  ];
+  const lv = levels[score] || levels[0];
+  bar.style.width     = lv.pct + '%';
+  bar.style.background = lv.color;
+  label.textContent    = lv.text;
+  label.style.color    = lv.color;
+}
+</script>
+{% endblock %}

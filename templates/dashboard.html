@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — HateGuardAI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-5 fade-up">
+    <div>
+      <h1 class="section-title mb-1">Analytics <span class="gradient-text">Dashboard</span></h1>
+      <p class="text-secondary-custom mb-0">Real-time prediction statistics &amp; insights</p>
+    </div>
+    <a href="{{ url_for('home') }}" class="btn btn-gradient">
+      <i class="bi bi-plus-lg me-1"></i>New Detection
+    </a>
+  </div>
+
+  <!-- ── Stat Cards Row ──────────────────────────────────────────── -->
+  <div class="row g-4 mb-5">
+    <div class="col-6 col-lg-3 fade-up">
+      <div class="stat-card" style="--glow-color:rgba(0,210,255,.06)">
+        <div class="stat-number gradient-text">{{ stats.total }}</div>
+        <div class="stat-label">Total Analyzed</div>
+        <div class="mt-2"><i class="bi bi-twitter text-accent-blue fs-5"></i></div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-up fade-up-d1">
+      <div class="stat-card" style="--glow-color:rgba(255,71,87,.06)">
+        <div class="stat-number" style="color:#ff4757">{{ stats.hate }}</div>
+        <div class="stat-label">Hate Speech</div>
+        <div class="mt-2 progress-custom">
+          <div class="bar" style="background:#ff4757;width:{{ stats.hate_pct }}%"></div>
+        </div>
+        <div class="text-muted-custom mt-1" style="font-size:.76rem">{{ stats.hate_pct }}%</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-up fade-up-d2">
+      <div class="stat-card" style="--glow-color:rgba(255,165,2,.06)">
+        <div class="stat-number" style="color:#ffa502">{{ stats.offensive }}</div>
+        <div class="stat-label">Offensive</div>
+        <div class="mt-2 progress-custom">
+          <div class="bar" style="background:#ffa502;width:{{ stats.offensive_pct }}%"></div>
+        </div>
+        <div class="text-muted-custom mt-1" style="font-size:.76rem">{{ stats.offensive_pct }}%</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-up fade-up-d3">
+      <div class="stat-card" style="--glow-color:rgba(0,255,136,.06)">
+        <div class="stat-number" style="color:#00ff88">{{ stats.neutral }}</div>
+        <div class="stat-label">Neutral</div>
+        <div class="mt-2 progress-custom">
+          <div class="bar" style="background:#00ff88;width:{{ stats.neutral_pct }}%"></div>
+        </div>
+        <div class="text-muted-custom mt-1" style="font-size:.76rem">{{ stats.neutral_pct }}%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Charts Row ──────────────────────────────────────────────── -->
+  <div class="row g-4 mb-5">
+    <!-- Doughnut -->
+    <div class="col-lg-4 fade-up">
+      <div class="glass-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-accent-blue"></i>Distribution</h6>
+        <canvas id="pieChart"
+                data-labels='["Hate Speech","Offensive Language","Neutral"]'
+                data-values='[{{ stats.hate }},{{ stats.offensive }},{{ stats.neutral }}]'
+                style="max-height:260px"></canvas>
+      </div>
+    </div>
+
+    <!-- Bar -->
+    <div class="col-lg-4 fade-up fade-up-d1">
+      <div class="glass-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart-line me-2 text-accent-purple"></i>Count Breakdown</h6>
+        <canvas id="barChart"
+                data-labels='["Hate Speech","Offensive Language","Neutral"]'
+                data-values='[{{ stats.hate }},{{ stats.offensive }},{{ stats.neutral }}]'
+                style="max-height:260px"></canvas>
+      </div>
+    </div>
+
+    <!-- Confidence Line -->
+    <div class="col-lg-4 fade-up fade-up-d2">
+      <div class="glass-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-graph-up me-2 text-accent-green"></i>Confidence Trend</h6>
+        <canvas id="lineChart"
+                data-labels='[{% for p in recent_preds %}"#{{ loop.index }}"{% if not loop.last %},{% endif %}{% endfor %}]'
+                data-values='[{% for p in recent_preds %}{{ p.confidence }}{% if not loop.last %},{% endif %}{% endfor %}]'
+                style="max-height:260px"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Word Cloud ──────────────────────────────────────────────── -->
+  {% if wordcloud %}
+  <div class="glass-card p-4 mb-5 fade-up">
+    <h6 class="fw-bold mb-3"><i class="bi bi-cloud me-2 text-accent-orange"></i>Word Cloud — Most Common Words</h6>
+    <img src="data:image/png;base64,{{ wordcloud }}" alt="Word Cloud" class="img-fluid rounded-lg w-100"/>
+  </div>
+  {% endif %}
+
+  <!-- ── Model Charts ────────────────────────────────────────────── -->
+  {% if history_chart or cm_chart %}
+  <div class="row g-4 mb-5">
+    {% if history_chart %}
+    <div class="{% if cm_chart %}col-lg-8{% else %}col-12{% endif %} fade-up">
+      <div class="glass-card p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow me-2 text-accent-blue"></i>Training History</h6>
+        <img src="{{ history_chart }}" alt="Training History" class="img-fluid rounded-lg w-100"/>
+      </div>
+    </div>
+    {% endif %}
+    {% if cm_chart %}
+    <div class="{% if history_chart %}col-lg-4{% else %}col-12{% endif %} fade-up fade-up-d1">
+      <div class="glass-card p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-grid me-2 text-accent-purple"></i>Confusion Matrix</h6>
+        <img src="{{ cm_chart }}" alt="Confusion Matrix" class="img-fluid rounded-lg w-100"/>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── Recent Predictions Table ───────────────────────────────── -->
+  <div class="glass-card p-4 mb-5 fade-up">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-accent-blue"></i>Recent Predictions</h6>
+      <span class="badge bg-glass border-glass text-secondary-custom">All Users</span>
+    </div>
+    {% if recent_preds %}
+    <div class="table-responsive">
+      <table class="table table-dark-custom table-hover table-striped align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Tweet</th>
+            <th>Prediction</th>
+            <th>Confidence</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in recent_preds %}
+          <tr>
+            <td class="text-muted-custom">{{ loop.index }}</td>
+            <td><span class="text-accent-blue fw-600">{{ p.username }}</span></td>
+            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              {{ p.tweet[:80] }}{% if p.tweet|length > 80 %}…{% endif %}
+            </td>
+            <td>
+              {% if p.prediction == 'Hate Speech' %}
+                <span class="badge" style="background:rgba(255,71,87,.18);color:#ff4757">🔥 Hate Speech</span>
+              {% elif p.prediction == 'Offensive Language' %}
+                <span class="badge" style="background:rgba(255,165,2,.18);color:#ffa502">⚠️ Offensive</span>
+              {% else %}
+                <span class="badge" style="background:rgba(0,255,136,.18);color:#00ff88">✅ Neutral</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress-custom flex-grow-1" style="height:6px;width:70px">
+                  <div class="bar" style="width:{{ p.confidence }}%;background:{% if p.prediction=='Hate Speech' %}#ff4757{% elif p.prediction=='Offensive Language' %}#ffa502{% else %}#00ff88{% endif %}"></div>
+                </div>
+                <span style="font-size:.8rem;font-weight:600">{{ p.confidence }}%</span>
+              </div>
+            </td>
+            <td class="text-muted-custom" style="font-size:.8rem;white-space:nowrap">
+              {{ p.created_at.strftime('%d %b, %H:%M') if p.created_at else 'N/A' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <div style="font-size:3rem;margin-bottom:1rem">📊</div>
+      <p class="text-secondary-custom">No predictions yet. Start analyzing tweets!</p>
+      <a href="{{ url_for('home') }}" class="btn btn-gradient">
+        <i class="bi bi-lightning-charge-fill me-1"></i>First Detection
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── My Predictions ─────────────────────────────────────────── -->
+  {% if user_history %}
+  <div class="glass-card p-4 fade-up">
+    <h6 class="fw-bold mb-3">
+      <i class="bi bi-person-circle me-2 text-accent-purple"></i>My Prediction History
+    </h6>
+    <div class="table-responsive">
+      <table class="table table-dark-custom table-hover align-middle">
+        <thead>
+          <tr><th>#</th><th>Tweet</th><th>Prediction</th><th>Confidence</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          {% for p in user_history %}
+          <tr>
+            <td class="text-muted-custom">{{ loop.index }}</td>
+            <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              {{ p.tweet[:90] }}{% if p.tweet|length > 90 %}…{% endif %}
+            </td>
+            <td>
+              {% if p.prediction == 'Hate Speech' %}
+                <span class="badge" style="background:rgba(255,71,87,.18);color:#ff4757">🔥 Hate Speech</span>
+              {% elif p.prediction == 'Offensive Language' %}
+                <span class="badge" style="background:rgba(255,165,2,.18);color:#ffa502">⚠️ Offensive</span>
+              {% else %}
+                <span class="badge" style="background:rgba(0,255,136,.18);color:#00ff88">✅ Neutral</span>
+              {% endif %}
+            </td>
+            <td><strong>{{ p.confidence }}%</strong></td>
+            <td class="text-muted-custom" style="font-size:.8rem">
+              {{ p.created_at.strftime('%d %b %Y, %H:%M') if p.created_at else 'N/A' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

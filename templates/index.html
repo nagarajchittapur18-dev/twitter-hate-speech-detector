@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}HateGuardAI — AI-Powered Twitter Hate Speech Detector{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero Section ─────────────────────────────────────────────────── -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: Text -->
+      <div class="col-lg-6 order-lg-1 order-2">
+        <div class="hero-badge fade-up">
+          <span>🤖</span> Powered by BiLSTM + Attention Mechanism
+        </div>
+        <h1 class="hero-title fade-up fade-up-d1">
+          Detect <span class="gradient-text">Hate Speech</span><br>in Tweets with AI
+        </h1>
+        <p class="hero-subtitle fade-up fade-up-d2">
+          Advanced NLP-powered detector using Word2Vec embeddings, BiLSTM deep learning,
+          and Attention visualization to identify hate speech, offensive language, and neutral tweets in real-time.
+        </p>
+        <div class="d-flex flex-wrap gap-3 fade-up fade-up-d3">
+          <a href="{{ url_for('register') if not session.get('user_id') else url_for('home') }}"
+             class="btn btn-gradient px-4 py-2">
+            <i class="bi bi-lightning-charge-fill me-2"></i>Start Detection
+          </a>
+          <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('login') }}"
+             class="btn btn-outline-glass px-4 py-2">
+            <i class="bi bi-bar-chart-line me-2"></i>View Dashboard
+          </a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="row g-3 mt-4 fade-up fade-up-d4">
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="fs-4 fw-bold gradient-text">3</div>
+              <div class="text-secondary-custom" style="font-size:.8rem">Classes</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="fs-4 fw-bold text-accent-blue">BiLSTM</div>
+              <div class="text-secondary-custom" style="font-size:.8rem">Model</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="fs-4 fw-bold text-accent-purple">NLP</div>
+              <div class="text-secondary-custom" style="font-size:.8rem">Powered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: AI Orb -->
+      <div class="col-lg-6 order-lg-2 order-1 text-center fade-up">
+        <div class="ai-orb mx-auto">
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+          <div class="orb-ring orb-ring-3"></div>
+          <div class="orb-core"></div>
+          <div class="orb-particle"></div>
+          <div class="orb-particle"></div>
+          <div class="orb-particle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Detection Labels Section ──────────────────────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 reveal">
+        <div class="feature-card text-center" style="border-color:rgba(255,71,87,.2)">
+          <div class="feature-icon red mx-auto">🔥</div>
+          <h5 class="fw-bold mb-2" style="color:#ff4757">Hate Speech</h5>
+          <p class="text-secondary-custom mb-0" style="font-size:.9rem">
+            Targets individuals or groups based on race, religion, ethnicity, or other protected characteristics.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal">
+        <div class="feature-card text-center" style="border-color:rgba(255,165,2,.2)">
+          <div class="feature-icon orange mx-auto">⚠️</div>
+          <h5 class="fw-bold mb-2" style="color:#ffa502">Offensive Language</h5>
+          <p class="text-secondary-custom mb-0" style="font-size:.9rem">
+            Profane, vulgar, or derogatory content that is rude but not necessarily hate speech.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4 reveal">
+        <div class="feature-card text-center" style="border-color:rgba(0,255,136,.2)">
+          <div class="feature-icon green mx-auto">✅</div>
+          <h5 class="fw-bold mb-2" style="color:#00ff88">Neutral</h5>
+          <p class="text-secondary-custom mb-0" style="font-size:.9rem">
+            Safe, clean content with no harmful or offensive language detected.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features Section ───────────────────────────────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <h2 class="section-title mb-3">Powered by <span class="gradient-text">Advanced AI</span></h2>
+      <p class="text-secondary-custom mx-auto" style="max-width:520px">
+        A complete NLP pipeline from raw tweet to visual explanation.
+      </p>
+    </div>
+    <div class="row g-4">
+      {% set features = [
+        ('🧹','blue','Full NLP Pipeline','URL removal, emoji stripping, hashtag cleaning, stopword removal, lemmatization.'),
+        ('🧠','purple','BiLSTM Model','Bidirectional LSTM captures context from both directions for accurate classification.'),
+        ('🎯','pink','Attention Mechanism','Highlights the exact toxic words responsible for the model\'s prediction.'),
+        ('📊','green','Analytics Dashboard','Pie charts, bar graphs, word cloud, and prediction history at a glance.'),
+        ('🔑','orange','Authentication','Secure registration, login, and session management with bcrypt hashing.'),
+        ('⚡','blue','REST API','JSON API endpoint for programmatic access and third-party integration.'),
+      ] %}
+      {% for icon, color, title, desc in features %}
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="feature-card h-100">
+          <div class="feature-icon {{ color }}">{{ icon }}</div>
+          <h6 class="fw-bold mb-2">{{ title }}</h6>
+          <p class="text-secondary-custom mb-0" style="font-size:.88rem">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── API Preview Section ────────────────────────────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5 reveal">
+        <h2 class="section-title mb-3">Simple <span class="gradient-text">REST API</span></h2>
+        <p class="text-secondary-custom mb-4">
+          Integrate hate speech detection into any application with a single POST request.
+        </p>
+        <button id="copy-btn" class="btn btn-outline-glass" onclick="copyAPISnippet()">
+          📋 Copy
+        </button>
+      </div>
+      <div class="col-lg-7 reveal">
+        <div class="glass-card p-4">
+          <pre id="api-snippet" style="color:#00d2ff;font-size:.85rem;margin:0;overflow-x:auto">POST /api/predict
+Content-Type: application/json
+
+{
+  "tweet": "Your tweet text here"
+}
+
+// Response
+{
+  "prediction":    "Hate Speech",
+  "confidence":    95.2,
+  "probabilities": {
+    "Hate Speech":        95.2,
+    "Offensive Language": 3.1,
+    "Neutral":            1.7
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ────────────────────────────────────────────────────────── -->
+<section class="py-5 mb-4">
+  <div class="container text-center reveal">
+    <div class="glass-card p-5 mx-auto" style="max-width:600px">
+      <div style="font-size:3rem;margin-bottom:1rem">🛡️</div>
+      <h2 class="section-title mb-3">Ready to <span class="gradient-text">Start Detecting?</span></h2>
+      <p class="text-secondary-custom mb-4">Create a free account and start analyzing tweets in seconds.</p>
+      <a href="{{ url_for('register') if not session.get('user_id') else url_for('home') }}"
+         class="btn btn-gradient px-5 py-2">
+        <i class="bi bi-lightning-charge-fill me-2"></i>
+        {{ 'Get Started Free' if not session.get('user_id') else 'Open Detector' }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

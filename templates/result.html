@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Result — {{ label }} | HateGuardAI{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="padding-top:2rem!important">
+
+  <!-- Back button -->
+  <div class="mb-4 fade-up">
+    <a href="{{ url_for('home') }}" class="btn btn-outline-glass btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>Analyze Another
+    </a>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ── LEFT: Main Result ─────────────────────────────────────── -->
+    <div class="col-lg-5">
+
+      <!-- Label Card -->
+      <div class="glass-card result-label-card mb-4 fade-up"
+           style="border-color:{{ label_color }}30">
+        <div class="text-center">
+          <div class="mb-3">
+            {% if label == 'Hate Speech' %}
+              <span class="label-badge label-hate"><i class="bi bi-exclamation-triangle-fill"></i>Hate Speech</span>
+            {% elif label == 'Offensive Language' %}
+              <span class="label-badge label-offensive"><i class="bi bi-exclamation-circle-fill"></i>Offensive Language</span>
+            {% else %}
+              <span class="label-badge label-neutral"><i class="bi bi-check-circle-fill"></i>Neutral</span>
+            {% endif %}
+          </div>
+
+          <!-- Confidence Ring -->
+          <div class="confidence-ring mb-3">
+            <svg width="130" height="130" viewBox="0 0 130 130">
+              <circle class="ring-track" cx="65" cy="65" r="54"
+                      fill="none" stroke-width="10"/>
+              <circle class="ring-fill" cx="65" cy="65" r="54"
+                      fill="none" stroke-width="10"
+                      stroke="{{ label_color }}"
+                      data-confidence="{{ confidence }}"/>
+            </svg>
+            <div class="confidence-value" style="color:{{ label_color }}">
+              {{ confidence }}%
+            </div>
+          </div>
+
+          <p class="text-secondary-custom mb-1" style="font-size:.85rem">Confidence Score</p>
+
+          <!-- Toxicity Level -->
+          <div class="mt-3 p-2 rounded-lg"
+               style="background:rgba(255,255,255,.04);border:1px solid var(--glass-border)">
+            <span class="text-muted-custom" style="font-size:.82rem">Toxicity Level: </span>
+            <strong style="color:{{ label_color }}">{{ tox_level }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Probability Breakdown -->
+      <div class="glass-card p-4 mb-4 fade-up fade-up-d1">
+        <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2 text-accent-blue"></i>Class Probabilities</h6>
+        {% set colors = ['#ff4757','#ffa502','#00ff88'] %}
+        {% set cls    = ['Hate Speech','Offensive Language','Neutral'] %}
+        {% for i in range(3) %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span style="font-size:.88rem;color:{{ colors[i] }}">{{ cls[i] }}</span>
+            <span style="font-size:.88rem;font-weight:600">{{ probabilities[i] }}%</span>
+          </div>
+          <div class="progress-custom">
+            <div class="bar prob-bar"
+                 style="background:{{ colors[i] }};transition:width 1.2s ease;"
+                 data-value="{{ probabilities[i] }}"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Original Tweet -->
+      <div class="glass-card p-4 fade-up fade-up-d2">
+        <h6 class="fw-bold mb-2"><i class="bi bi-twitter me-2 text-accent-blue"></i>Original Tweet</h6>
+        <p class="mb-0" style="font-size:.92rem;color:var(--text-secondary);font-style:italic">
+          "{{ tweet }}"
+        </p>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Visualizations ─────────────────────────────────── -->
+    <div class="col-lg-7">
+
+      <!-- Highlighted Tokens -->
+      <div class="glass-card p-4 mb-4 fade-up">
+        <h6 class="fw-bold mb-3">
+          <i class="bi bi-highlighter me-2 text-accent-orange"></i>
+          Toxic Word Highlighting
+          <span class="badge ms-2" style="background:rgba(255,165,2,.15);color:#ffa502;font-size:.7rem">Attention-weighted</span>
+        </h6>
+        <div class="token-highlights">
+          {% if highlights %}
+            {{ highlights | safe }}
+          {% else %}
+            <span class="text-muted-custom">No tokens to highlight.</span>
+          {% endif %}
+        </div>
+        <p class="text-muted-custom mt-2 mb-0" style="font-size:.76rem">
+          🔴 Darker red = higher attention score (more toxic influence)
+        </p>
+      </div>
+
+      <!-- Attention Heatmap -->
+      {% if heatmap %}
+      <div class="glass-card p-4 mb-4 fade-up fade-up-d1">
+        <h6 class="fw-bold mb-3">
+          <i class="bi bi-thermometer-half me-2 text-accent-purple"></i>
+          Attention Heatmap
+        </h6>
+        <div class="heatmap-wrapper">
+          <img src="data:image/png;base64,{{ heatmap }}"
+               alt="Attention Heatmap" class="img-fluid"/>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Summary Table -->
+      <div class="glass-card p-4 fade-up fade-up-d2">
+        <h6 class="fw-bold mb-3">
+          <i class="bi bi-clipboard-data me-2 text-accent-green"></i>
+          Analysis Summary
+        </h6>
+        <table class="table table-dark-custom table-sm mb-0">
+          <tbody>
+            <tr>
+              <td class="text-secondary-custom">Prediction</td>
+              <td><strong style="color:{{ label_color }}">{{ label }}</strong></td>
+            </tr>
+            <tr>
+              <td class="text-secondary-custom">Confidence</td>
+              <td><strong>{{ confidence }}%</strong></td>
+            </tr>
+            <tr>
+              <td class="text-secondary-custom">Toxicity Level</td>
+              <td><strong style="color:{{ label_color }}">{{ tox_level }}</strong></td>
+            </tr>
+            <tr>
+              <td class="text-secondary-custom">Tokens Analyzed</td>
+              <td><strong>{{ tokens | length }}</strong></td>
+            </tr>
+            <tr>
+              <td class="text-secondary-custom">Top Attention Token</td>
+              <td>
+                {% if tokens and attention %}
+                  {% set max_idx = attention.index(attention | max) %}
+                  <code style="color:#ffa502">{{ tokens[max_idx] }}</code>
+                  <span class="text-muted-custom ms-1">({{ "%.3f"|format(attention[max_idx]) }})</span>
+                {% else %}
+                  <span class="text-muted-custom">N/A</span>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="divider mt-3"></div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ url_for('home') }}" class="btn btn-gradient btn-sm">
+            <i class="bi bi-arrow-repeat me-1"></i>Analyze Another
+          </a>
+          <a href="{{ url_for('dashboard') }}" class="btn btn-outline-glass btn-sm">
+            <i class="bi bi-bar-chart-line me-1"></i>View Dashboard
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

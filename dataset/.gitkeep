@@ -1,0 +1,10 @@
+# Dataset directory
+# Place hate_speech.csv here before running training/train_model.py
+#
+# Required CSV columns:
+#   tweet  — raw tweet text
+#   label  — 0 (Hate Speech), 1 (Offensive Language), 2 (Neutral)
+#
+# Recommended: Hate Speech and Offensive Language Dataset
+# https://github.com/t-davidson/hate-speech-and-offensive-language
+.gitkeep

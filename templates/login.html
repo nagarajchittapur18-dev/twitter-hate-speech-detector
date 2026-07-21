@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Login — HateGuardAI{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="container">
+    <div class="auth-card glass-card fade-up">
+
+      <!-- Logo -->
+      <div class="text-center mb-4">
+        <div style="font-size:2.8rem;margin-bottom:.6rem">🛡️</div>
+        <h1 class="auth-title gradient-text">Welcome Back</h1>
+        <p class="text-secondary-custom mb-0">Sign in to your HateGuardAI account</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <form method="POST" action="{{ url_for('login') }}" novalidate>
+
+        <div class="mb-3">
+          <label class="form-label-custom">
+            <i class="bi bi-person me-1 text-accent-blue"></i>Username
+          </label>
+          <input type="text" name="username" id="username"
+                 class="form-control form-control-dark"
+                 placeholder="Enter your username"
+                 autocomplete="username"
+                 required/>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-custom">
+            <i class="bi bi-lock me-1 text-accent-blue"></i>Password
+          </label>
+          <div class="position-relative">
+            <input type="password" name="password" id="password"
+                   class="form-control form-control-dark"
+                   placeholder="Enter your password"
+                   autocomplete="current-password"
+                   required/>
+            <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y pe-3"
+                    style="background:none;border:none;color:var(--text-muted)"
+                    onclick="togglePwd('password',this)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-gradient w-100 py-2 mb-3">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+
+        <p class="text-center text-secondary-custom mb-0" style="font-size:.88rem">
+          Don't have an account?
+          <a href="{{ url_for('register') }}" class="text-accent-blue fw-600 text-decoration-none">Create one</a>
+        </p>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const icon = btn.querySelector('i');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.classList.replace('bi-eye','bi-eye-slash');
+  } else {
+    inp.type = 'password';
+    icon.classList.replace('bi-eye-slash','bi-eye');
+  }
+}
+</script>
+{% endblock %}

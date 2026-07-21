@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Detect Tweet — HateGuardAI{% endblock %}
+
+{% block content %}
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <div class="loader-orb"></div>
+  <p class="loader-text">🔍 Preprocessing tweet…</p>
+  <p style="color:var(--text-muted);font-size:.8rem">This may take a few seconds</p>
+</div>
+
+<div class="predict-wrapper">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-xl-7">
+
+        <!-- Header -->
+        <div class="text-center mb-5 fade-up">
+          <div class="hero-badge mx-auto d-inline-flex mb-3">
+            <span>🛡️</span> AI-Powered Detection
+          </div>
+          <h1 class="section-title mb-2">
+            Analyze a <span class="gradient-text">Tweet</span>
+          </h1>
+          <p class="text-secondary-custom">
+            Hello, <strong class="text-accent-blue">{{ username }}</strong>! Paste or type any tweet below.
+          </p>
+        </div>
+
+        <!-- Prediction Form -->
+        <div class="glass-card p-4 p-lg-5 fade-up fade-up-d1">
+          <form id="predict-form" action="{{ url_for('predict') }}" method="POST">
+
+            <div class="mb-4">
+              <label for="tweet-input" class="form-label-custom d-flex align-items-center gap-2">
+                <i class="bi bi-twitter text-accent-blue"></i> Tweet Content
+              </label>
+              <textarea
+                id="tweet-input"
+                name="tweet"
+                class="tweet-textarea form-control"
+                rows="6"
+                maxlength="500"
+                placeholder="Enter or paste a tweet here… e.g. 'I love how diverse our community is!'"
+                required></textarea>
+              <div id="char-counter" class="char-counter">0 / 500</div>
+            </div>
+
+            <!-- Quick examples -->
+            <div class="mb-4">
+              <p class="form-label-custom mb-2">💡 Quick Examples:</p>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-sm btn-outline-glass"
+                  onclick="setExample('I had such a wonderful day at the park today!')">
+                  😊 Neutral
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-glass"
+                  onclick="setExample('You are such an idiot and nobody likes you!')">
+                  ⚠️ Offensive
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-glass"
+                  onclick="setExample('Those people should be kicked out of our country, they don\'t belong here!')">
+                  🔥 Hate Speech
+                </button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <a href="{{ url_for('dashboard') }}" class="btn btn-outline-glass">
+                <i class="bi bi-bar-chart-line me-1"></i>Dashboard
+              </a>
+              <button type="submit" class="btn btn-gradient px-5" id="submit-btn">
+                <i class="bi bi-cpu me-2"></i>Analyze Tweet
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="row g-3 mt-4 fade-up fade-up-d2">
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="text-accent-blue mb-1"><i class="bi bi-braces fs-5"></i></div>
+              <div style="font-size:.76rem;color:var(--text-muted)">NLP Preprocessing</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="text-accent-purple mb-1"><i class="bi bi-diagram-3 fs-5"></i></div>
+              <div style="font-size:.76rem;color:var(--text-muted)">BiLSTM + Attention</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="glass-card p-3 text-center">
+              <div class="text-accent-green mb-1"><i class="bi bi-eye fs-5"></i></div>
+              <div style="font-size:.76rem;color:var(--text-muted)">Visual Heatmap</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setExample(text) {
+  const ta = document.getElementById('tweet-input');
+  ta.value = text;
+  ta.dispatchEvent(new Event('input'));
+}
+</script>
+{% endblock %}
