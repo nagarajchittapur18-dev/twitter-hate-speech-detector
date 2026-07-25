@@ -1,5 +1,9 @@
+# Flask Framework
 Flask==2.3.3
 Werkzeug==2.3.7
+gunicorn==23.0.0
+
+# Database
 flask-mysqldb==1.0.1
 mysqlclient==2.2.0
 
@@ -22,7 +26,6 @@ wordcloud==1.9.2
 Pillow==10.0.0
 
 # Utilities
-pickle-mixin==1.0.2
 python-dotenv==1.0.0
 requests==2.31.0
 tqdm==4.66.1

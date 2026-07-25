@@ -1,36 +1,77 @@
+# ==============================
 # Python
+# ==============================
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+*.so
 
+# ==============================
 # Virtual Environment
+# ==============================
 venv/
 env/
+ENV/
+.venv/
 
+# ==============================
+# Environment Variables
+# ==============================
+.env
+
+# ==============================
 # IDE
+# ==============================
 .vscode/
 .idea/
 
+# ==============================
 # OS Files
+# ==============================
 .DS_Store
 Thumbs.db
 
-# Environment Variables
-.env
+# ==============================
+# Python Cache
+# ==============================
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Model Checkpoints (optional if too large)
-*.ckpt
-
+# ==============================
 # Logs
+# ==============================
 *.log
 
+# ==============================
 # Jupyter
+# ==============================
 .ipynb_checkpoints/
 
-# TensorFlow cache
-.tensorflow/
-
-# Build
+# ==============================
+# Build Files
+# ==============================
 build/
 dist/
+*.egg-info/
+.eggs/
+
+# ==============================
+# TensorFlow / Model Cache
+# ==============================
+.tensorflow/
+nltk_data/
+
+# ==============================
+# Git LFS / Temporary Files
+# ==============================
+*.tmp
+*.bak
+*.swp
+
+# ==============================
+# Node (if added later)
+# ==============================
+node_modules/s
