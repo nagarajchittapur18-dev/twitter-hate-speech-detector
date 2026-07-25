@@ -11,9 +11,15 @@ from flask import (
 )
 from config import Config
 from database.db_manager import (
-    mysql, create_user, get_user_by_username, verify_password,
-    save_prediction, get_user_predictions, get_all_predictions,
-    get_label_counts, get_total_count, get_recent_predictions,
+    create_user,
+    get_user_by_username,
+    verify_password,
+    save_prediction,
+    get_user_predictions,
+    get_all_predictions,
+    get_label_counts,
+    get_total_count,
+    get_recent_predictions,
     get_common_words,
 )
 from utils.helpers import predict_tweet, toxicity_level
@@ -27,8 +33,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config["APP_CONFIG"] = Config  # expose to blueprints
 
-# MySQL
-mysql.init_app(app)
+
 
 # Blueprints
 app.register_blueprint(predict_bp)
