@@ -10,6 +10,7 @@ from flask import (
     url_for, session, flash, jsonify
 )
 from config import Config
+from init_db import initialize_database
 from database.db_manager import (
     create_user,
     get_user_by_username,
@@ -33,10 +34,17 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config["APP_CONFIG"] = Config  # expose to blueprints
 
+app = Flask(__name__)
+app.config.from_object(Config)
+app.config["APP_CONFIG"] = Config
 
+# Automatically create SQLite database if it doesn't exist
+if not os.path.exists(Config.DATABASE_PATH):
+    initialize_database()
 
 # Blueprints
 app.register_blueprint(predict_bp)
+
 
 # Ensure static dirs exist
 os.makedirs(os.path.join(Config.STATIC_DIR, "uploads"), exist_ok=True)
