@@ -76,3 +76,5 @@ nltk_data/
 # ==============================
 node_modules/s
 hate_speech.db
+
+static/charts/
