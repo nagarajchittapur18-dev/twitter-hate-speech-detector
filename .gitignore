@@ -75,3 +75,4 @@ nltk_data/
 # Node (if added later)
 # ==============================
 node_modules/s
+hate_speech.db
